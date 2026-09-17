@@ -1,0 +1,109 @@
+@page "/settings"
+@inject CurrentUserService CurrentUser
+@implements IDisposable
+
+<PageTitle>Settings &mdash; Pulse</PageTitle>
+
+<div class="p-6 max-w-2xl space-y-6">
+    <div>
+        <h1 class="text-2xl font-semibold">Settings</h1>
+        <p class="text-muted-foreground text-sm mt-1">Manage your workspace preferences.</p>
+    </div>
+
+    @if (!CurrentUser.CanEditSettings)
+    {
+        <div class="rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-500/10 dark:border-amber-500/30 p-4 text-sm text-amber-800 dark:text-amber-300">
+            You're viewing as <strong>@CurrentUser.Role</strong>. This role can't edit settings &mdash; switch to Admin or Editor
+            from the topbar to make changes.
+        </div>
+    }
+
+    <fieldset disabled="@(!CurrentUser.CanEditSettings)" class="space-y-6 disabled:opacity-60">
+
+        <div class="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
+            <h3 class="font-semibold">Workspace</h3>
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Workspace name</label>
+                <input @bind="_workspaceName"
+                       class="w-full px-3 py-2 text-sm rounded-md border border-border bg-background outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Support email</label>
+                <input @bind="_supportEmail" type="email"
+                       class="w-full px-3 py-2 text-sm rounded-md border border-border bg-background outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Timezone</label>
+                <select @bind="_timezone" class="w-full px-3 py-2 text-sm rounded-md border border-border bg-background outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option>UTC</option>
+                    <option>Africa/Johannesburg</option>
+                    <option>America/New_York</option>
+                    <option>Europe/London</option>
+                    <option>Asia/Tokyo</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
+            <h3 class="font-semibold">Notifications</h3>
+
+            <label class="flex items-center justify-between text-sm">
+                <span>Email me weekly summaries</span>
+                <input type="checkbox" @bind="_weeklySummary" class="h-4 w-4 accent-indigo-600" />
+            </label>
+
+            <label class="flex items-center justify-between text-sm">
+                <span>Notify on new user signups</span>
+                <input type="checkbox" @bind="_notifySignups" class="h-4 w-4 accent-indigo-600" />
+            </label>
+
+            <label class="flex items-center justify-between text-sm">
+                <span>Product update emails</span>
+                <input type="checkbox" @bind="_productUpdates" class="h-4 w-4 accent-indigo-600" />
+            </label>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button @onclick="Save" class="px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors">
+                Save changes
+            </button>
+            @if (_savedMessage)
+            {
+                <span class="text-sm text-emerald-600 dark:text-emerald-400">Saved!</span>
+            }
+        </div>
+    </fieldset>
+</div>
+
+@code {
+    private string _workspaceName = "Acme Inc.";
+    private string _supportEmail = "support@acme.co";
+    private string _timezone = "UTC";
+    private bool _weeklySummary = true;
+    private bool _notifySignups = true;
+    private bool _productUpdates = false;
+    private bool _savedMessage = false;
+
+    protected override void OnInitialized()
+    {
+        CurrentUser.OnChange += StateHasChanged;
+    }
+
+    private async Task Save()
+    {
+        // In a real app: persist to a database / call an API here.
+        _savedMessage = true;
+        StateHasChanged();
+        await Task.Delay(2000);
+        _savedMessage = false;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        CurrentUser.OnChange -= StateHasChanged;
+    }
+}

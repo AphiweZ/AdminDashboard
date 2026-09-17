@@ -1,0 +1,27 @@
+<div class="rounded-xl border border-border bg-card p-5 shadow-sm">
+    <div class="flex items-start justify-between">
+        <div>
+            <p class="text-sm text-muted-foreground">@Title</p>
+            <p class="text-2xl font-semibold mt-1">@Value</p>
+        </div>
+        <div class="h-10 w-10 rounded-lg flex items-center justify-center text-lg @IconBg">
+            @((MarkupString)Icon)
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Delta))
+    {
+        <p class="mt-3 text-xs @(IsPositive ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400")">
+            @(IsPositive ? "\u2191" : "\u2193") @Delta <span class="text-muted-foreground">vs last month</span>
+        </p>
+    }
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public string Icon { get; set; } = "";
+    [Parameter] public string Delta { get; set; } = "";
+    [Parameter] public bool IsPositive { get; set; } = true;
+    [Parameter] public string IconBg { get; set; } = "bg-indigo-600/10 text-indigo-600";
+}

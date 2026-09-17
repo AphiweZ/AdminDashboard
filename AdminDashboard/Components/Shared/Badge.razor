@@ -1,0 +1,8 @@
+<span class="@($"inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {ColorClass}")">
+    @Text
+</span>
+
+@code {
+    [Parameter] public string Text { get; set; } = "";
+    [Parameter] public string ColorClass { get; set; } = "bg-slate-100 text-slate-700 dark:bg-slate-700/40 dark:text-slate-300";
+}

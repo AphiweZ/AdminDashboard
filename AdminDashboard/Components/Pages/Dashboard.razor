@@ -1,0 +1,82 @@
+@page "/"
+@inject MockDataService Data
+
+<PageTitle>Dashboard &mdash; Pulse</PageTitle>
+
+<div class="p-6 space-y-6">
+    <div>
+        <h1 class="text-2xl font-semibold">Dashboard</h1>
+        <p class="text-muted-foreground text-sm mt-1">Overview of your workspace performance.</p>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard Title="Total Users" Value="@Data.TotalUsers.ToString("N0")"
+                  Icon="&#128101;" Delta="8.2%" IsPositive="true"
+                  IconBg="bg-indigo-600/10 text-indigo-600" />
+
+        <StatCard Title="Active Projects" Value="@Data.ActiveProjects.ToString()"
+                  Icon="&#128193;" Delta="3.1%" IsPositive="true"
+                  IconBg="bg-blue-600/10 text-blue-600" />
+
+        <StatCard Title="Revenue" Value="@Data.MonthlyRevenue.ToString("C0")"
+                  Icon="&#128176;" Delta="15.3%" IsPositive="true"
+                  IconBg="bg-emerald-600/10 text-emerald-600" />
+
+        <StatCard Title="Growth" Value="@($"{Data.GrowthPercent:0.0}%")"
+                  Icon="&#128200;" Delta="1.4%" IsPositive="false"
+                  IconBg="bg-amber-600/10 text-amber-600" />
+    </div>
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <LineChart Title="Revenue Over Time" Data="Data.GetRevenueOverTime()" Color="#6366f1" />
+        <BarChart Title="Signups by Month" Data="Data.GetSignupsByMonth()" Color="#22c55e" />
+    </div>
+
+    <!-- Recent projects -->
+    <div class="rounded-xl border border-border bg-card p-5 shadow-sm">
+        <h3 class="font-semibold mb-4">Recent Projects</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-left text-muted-foreground border-b border-border">
+                        <th class="pb-2 font-medium">Project</th>
+                        <th class="pb-2 font-medium">Owner</th>
+                        <th class="pb-2 font-medium">Status</th>
+                        <th class="pb-2 font-medium">Progress</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var project in Data.GetProjects().Take(5))
+                    {
+                        <tr class="border-b border-border/50 last:border-0">
+                            <td class="py-3 font-medium">@project.Name</td>
+                            <td class="py-3 text-muted-foreground">@project.Owner</td>
+                            <td class="py-3"><Badge Text="@project.Status.ToString()" ColorClass="@StatusBadgeClass(project.Status)" /></td>
+                            <td class="py-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-24 h-1.5 rounded-full bg-muted overflow-hidden">
+                                        <div class="h-full bg-indigo-600" style="width:@(project.ProgressPercent)%"></div>
+                                    </div>
+                                    <span class="text-xs text-muted-foreground">@project.ProgressPercent%</span>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string StatusBadgeClass(ProjectStatus status) => status switch
+    {
+        ProjectStatus.Active => "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400",
+        ProjectStatus.Planning => "bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400",
+        ProjectStatus.OnHold => "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400",
+        ProjectStatus.Completed => "bg-slate-100 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400",
+        _ => "bg-slate-100 text-slate-600"
+    };
+}

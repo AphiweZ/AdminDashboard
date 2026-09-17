@@ -1,0 +1,17 @@
+<NavLink href="@Href" Match="@Match"
+         class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+         ActiveClass="bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600/10">
+    <span class="text-lg leading-none">@((MarkupString)Icon)</span>
+    @if (SidebarOpen)
+    {
+        <span>@Label</span>
+    }
+</NavLink>
+
+@code {
+    [Parameter] public string Href { get; set; } = "/";
+    [Parameter] public string Icon { get; set; } = "";
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public bool SidebarOpen { get; set; }
+    [Parameter] public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix;
+}

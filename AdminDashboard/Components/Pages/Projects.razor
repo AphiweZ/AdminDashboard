@@ -1,0 +1,49 @@
+@page "/projects"
+@inject MockDataService Data
+
+<PageTitle>Projects &mdash; Pulse</PageTitle>
+
+<div class="p-6 space-y-6">
+    <div>
+        <h1 class="text-2xl font-semibold">Projects</h1>
+        <p class="text-muted-foreground text-sm mt-1">@Data.ActiveProjects active out of @Data.GetProjects().Count total.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        @foreach (var project in Data.GetProjects())
+        {
+            <div class="rounded-xl border border-border bg-card p-5 shadow-sm flex flex-col gap-3">
+                <div class="flex items-start justify-between">
+                    <h3 class="font-semibold">@project.Name</h3>
+                    <Badge Text="@project.Status.ToString()" ColorClass="@StatusBadgeClass(project.Status)" />
+                </div>
+                <p class="text-sm text-muted-foreground">Owner: @project.Owner</p>
+
+                <div>
+                    <div class="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                        <span>Progress</span>
+                        <span>@project.ProgressPercent%</span>
+                    </div>
+                    <div class="w-full h-2 rounded-full bg-muted overflow-hidden">
+                        <div class="h-full bg-indigo-600" style="width:@(project.ProgressPercent)%"></div>
+                    </div>
+                </div>
+
+                <p class="text-xs text-muted-foreground mt-auto pt-2 border-t border-border/50">
+                    Due @project.DueDate.ToString("MMM d, yyyy")
+                </p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private string StatusBadgeClass(ProjectStatus status) => status switch
+    {
+        ProjectStatus.Active => "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400",
+        ProjectStatus.Planning => "bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400",
+        ProjectStatus.OnHold => "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400",
+        ProjectStatus.Completed => "bg-slate-100 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400",
+        _ => "bg-slate-100 text-slate-600"
+    };
+}

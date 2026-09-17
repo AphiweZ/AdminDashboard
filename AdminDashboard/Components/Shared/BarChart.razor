@@ -1,0 +1,41 @@
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<div class="rounded-xl border border-border bg-card p-5 shadow-sm">
+    <h3 class="font-semibold mb-4">@Title</h3>
+    <div class="relative" style="height: 280px;">
+        <canvas id="@_canvasId"></canvas>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public List<ChartPoint> Data { get; set; } = new();
+    [Parameter] public string Color { get; set; } = "#22c55e";
+
+    private readonly string _canvasId = $"bar-{Guid.NewGuid():N}";
+    private bool _rendered;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_rendered)
+        {
+            _rendered = true;
+            var labels = Data.Select(d => d.Label).ToArray();
+            var values = Data.Select(d => d.Value).ToArray();
+            await JS.InvokeVoidAsync("pulseCharts.renderBar", _canvasId, labels, values, Color);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("pulseCharts.destroy", _canvasId);
+        }
+        catch (JSDisconnectedException)
+        {
+            // Circuit already gone — nothing to clean up.
+        }
+    }
+}

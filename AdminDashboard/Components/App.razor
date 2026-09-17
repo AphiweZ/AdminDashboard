@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pulse &mdash; Admin Dashboard</title>
+    <base href="/" />
+
+    <!-- Tailwind (Play CDN) — fine for a demo/learning project.
+         For production, install Tailwind via npm and compile a static CSS file instead. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        border: 'rgb(var(--border) / <alpha-value>)',
+                        background: 'rgb(var(--background) / <alpha-value>)',
+                        foreground: 'rgb(var(--foreground) / <alpha-value>)',
+                        card: 'rgb(var(--card) / <alpha-value>)',
+                        muted: 'rgb(var(--muted) / <alpha-value>)',
+                        primary: 'rgb(var(--primary) / <alpha-value>)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+    <link rel="stylesheet" href="css/app.css" />
+    <HeadOutlet />
+</head>
+<body class="bg-background text-foreground transition-colors duration-200">
+    <Routes @rendermode="InteractiveServer" />
+    <script src="_framework/blazor.web.js"></script>
+    <script src="js/charts.js"></script>
+</body>
+</html>

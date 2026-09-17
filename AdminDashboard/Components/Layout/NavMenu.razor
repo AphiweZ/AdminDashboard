@@ -1,0 +1,37 @@
+@inject CurrentUserService CurrentUser
+@implements IDisposable
+
+<NavItem Href="/" Icon="&#128202;" Label="Dashboard" SidebarOpen="SidebarOpen" Match="NavLinkMatch.All" />
+<NavItem Href="/users" Icon="&#128101;" Label="Users" SidebarOpen="SidebarOpen" />
+<NavItem Href="/projects" Icon="&#128193;" Label="Projects" SidebarOpen="SidebarOpen" />
+
+@if (CurrentUser.CanEditSettings)
+{
+    <NavItem Href="/settings" Icon="&#9881;&#65039;" Label="Settings" SidebarOpen="SidebarOpen" />
+}
+else
+{
+    <div class="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-muted-foreground/50 cursor-not-allowed select-none"
+         title="Your current role (Viewer) doesn't have access to Settings">
+        <span class="text-lg leading-none">&#9881;&#65039;</span>
+        @if (SidebarOpen)
+        {
+            <span>Settings</span>
+            <span class="ml-auto text-xs">&#128274;</span>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public bool SidebarOpen { get; set; }
+
+    protected override void OnInitialized()
+    {
+        CurrentUser.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        CurrentUser.OnChange -= StateHasChanged;
+    }
+}
